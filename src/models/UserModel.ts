@@ -1,6 +1,7 @@
 // src/models/UserModel.ts
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
+import bcrypt from "bcrypt";
 
 export enum UserType {
   COMUM = 'comum',
@@ -23,6 +24,13 @@ class UserModel extends Model {
   google_token_acesso?: string;
   google_token_atualizado?: string;
   google_token_expira_em?: Date;
+
+  public async validatePassword(senha: string): Promise<boolean> {
+    const incript = await bcrypt.compare(senha, this.senha);
+
+    return incript;
+  }
+
 }
 
 UserModel.init(
