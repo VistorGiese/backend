@@ -48,7 +48,7 @@ app.use("/avaliacoes", RatingRoutes);
 app.use(UserRoutes);
 
 // Simulating database connection
-import sequelize from "./config/database"; // Assuming a database configuration file exists
+import sequelize from "./config/database"; 
 
 sequelize
   .authenticate()
