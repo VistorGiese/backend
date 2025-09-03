@@ -34,7 +34,7 @@ app.use("/membros_banda", BandMemberRoutes);
 app.use("/bandas", BandRoutes);
 app.use("/estabelecimentos_bloqueio", EstablishmentBlockRoutes);
 app.use("/estabelecimentos", EstablishmentRoutes);
-app.use("/estabelecimentos_horarios", EstablishmentScheduleRoutes);
+app.use("/estabelecimentos/horarios", EstablishmentScheduleRoutes);
 app.use("/agendamentos", BookingRoutes);
 app.use("/comentarios", CommentRoutes);
 app.use("/contratos", ContractRoutes);

@@ -70,3 +70,23 @@ export const addBandManager = async (req: Request, res: Response) => {
     return res.status(500).json({ error: 'Erro ao adicionar gestor', details: error.message });
   }
 };
+
+export const addBandMember = async (req: Request, res: Response) => {
+  const { banda_id, usuario_id, instrumento } = req.body;
+  try {
+    // Verifica se o usuário já é membro da banda
+    const exists = await BandMemberModel.findOne({ where: { banda_id, usuario_id } });
+    if (exists) return res.status(400).json({ error: 'Usuário já é membro desta banda' });
+    // Cria membro
+    const membro = await BandMemberModel.create({
+      banda_id,
+      usuario_id,
+      funcao: instrumento,
+      ativo: true,
+      data_entrada: new Date()
+    });
+    return res.status(201).json({ message: 'Membro adicionado à banda', membro });
+  } catch (error: any) {
+    return res.status(500).json({ error: 'Erro ao adicionar membro', details: error.message });
+  }
+};
