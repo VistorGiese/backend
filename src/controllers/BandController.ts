@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import BandModel from "../models/BandModel";
+import BandMemberModel from "../models/BandMemberModel";
+import UserBandModel from '../models/UserBandModel';
 
 export const createBand = async (req: Request, res: Response) => {
   try {
@@ -23,7 +25,12 @@ export const getBandById = async (req: Request, res: Response) => {
   try {
     const band = await BandModel.findByPk(req.params.id);
     if (!band) return res.status(404).json({ error: "Banda não encontrada" });
-    res.json(band);
+    if (band.aceita_agendamentos === false) {
+      return res.status(403).json({ error: "Banda não aceita agendamentos" });
+    }
+  // Busca os membros da banda
+  const members = await BandMemberModel.findAll({ where: { banda_id: band.id } });
+  res.json({ ...band.toJSON(), membros: members });
   } catch (error) {
     res.status(500).json({ error: "Erro ao buscar banda", details: error });
   }
@@ -48,5 +55,18 @@ export const deleteBand = async (req: Request, res: Response) => {
     res.json({ message: "Banda removida com sucesso" });
   } catch (error) {
     res.status(500).json({ error: "Erro ao remover banda", details: error });
+  }
+};
+
+export const addBandManager = async (req: Request, res: Response) => {
+  const { userId, bandId } = req.body;
+  try {
+    // Verifica se já existe vínculo
+    const exists = await UserBandModel.findOne({ where: { userId, bandId } });
+    if (exists) return res.status(400).json({ error: 'Usuário já é gestor desta banda' });
+    await UserBandModel.create({ userId, bandId });
+    return res.status(201).json({ message: 'Usuário adicionado como gestor da banda' });
+  } catch (error: any) {
+    return res.status(500).json({ error: 'Erro ao adicionar gestor', details: error.message });
   }
 };

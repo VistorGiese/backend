@@ -9,6 +9,10 @@ import {
 import bcrypt from "bcrypt";
 import { AuthRequest } from "../middleware/authmiddleware";
 import { Op } from "sequelize";
+import BandModel from '../models/BandModel';
+import EstablishmentModel from '../models/EstablishmentModel';
+import UserBandModel from '../models/UserBandModel';
+import UserEstablishmentModel from '../models/UserEstablishmentModel';
 
 export const getAll = async (req: Request, res: Response) => {
     const users = await UserModel.findAll();
@@ -91,41 +95,40 @@ export const getAll = async (req: Request, res: Response) => {
   
   export const updaterUser = async (req: AuthRequest, res: Response) => {
     try {
-      const { name, password, address } = req.body;
-  
-      const validationError = await updateUserData(name, password, address);
-      if (validationError) {
-        return res.status(400).json({ error: validationError });
-      }
-  
+      const { nome, password, address } = req.body;
+
       if (!req.user) {
         return res.status(401).json({ error: "Usuário não autenticado" });
       }
-  
+
       const userIdFromToken = req.user.id_user;
       const userIdFromParams = parseInt(req.params.id);
-  
+
       if (userIdFromToken !== userIdFromParams) {
         return res.status(403).json({
           error: "Você não tem permissão para alterar os dados de outro usuário.",
         });
       }
-  
+
       const user = await UserModel.findByPk(userIdFromToken);
       if (!user) {
         return res.status(404).json({ error: "Usuário não encontrado" });
       }
-  
-      user.nome = name;
-      user.senha = password ?? user.senha;
-  
-      if (password) {
+
+      if (nome !== undefined) {
+        if (typeof nome !== "string" || nome.trim().length === 0) {
+          return res.status(400).json({ error: "Escreva um nome válido" });
+        }
+        user.nome = nome;
+      }
+
+      if (password !== undefined) {
         const hashedPassword = await bcrypt.hash(password, 10);
         user.senha = hashedPassword;
       }
-  
+
       await user.save();
-  
+
       return res.status(200).json(user);
     } catch (error: any) {
       return res
@@ -150,5 +153,33 @@ export const getAll = async (req: Request, res: Response) => {
     } catch (error) {
       res.status(500).json("erro interno do servidor" + error);
     }
-  }
+  };
+
+  export const switchProfile = async (req: Request, res: Response) => {
+    const { userId, tipo, perfilId } = req.body; // tipo: 'comum', 'banda', 'estabelecimento'
+    try {
+      const user = await UserModel.findByPk(userId);
+      if (!user) return res.status(404).json({ error: 'Usuário não encontrado' });
+
+      if (tipo === 'comum') {
+        // Perfil pessoa física
+        return res.json({ perfil: 'comum', user });
+      }
+      if (tipo === 'banda') {
+        const vinculo = await UserBandModel.findOne({ where: { userId, bandId: perfilId } });
+        if (!vinculo) return res.status(403).json({ error: 'Usuário não é gestor desta banda' });
+        const banda = await BandModel.findByPk(perfilId);
+        return res.json({ perfil: 'banda', banda });
+      }
+      if (tipo === 'estabelecimento') {
+        const vinculo = await UserEstablishmentModel.findOne({ where: { userId, establishmentId: perfilId } });
+        if (!vinculo) return res.status(403).json({ error: 'Usuário não é gestor deste estabelecimento' });
+        const estabelecimento = await EstablishmentModel.findByPk(perfilId);
+        return res.json({ perfil: 'estabelecimento', estabelecimento });
+      }
+      return res.status(400).json({ error: 'Tipo de perfil inválido' });
+    } catch (error: any) {
+      return res.status(500).json({ error: 'Erro ao alternar perfil', details: error.message });
+    }
+  };
 

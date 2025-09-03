@@ -3,6 +3,17 @@ import { EstablishmentBlockModel } from "../models/BlockModels";
 
 export const createBlock = async (req: Request, res: Response) => {
   try {
+    // Verifica se já existe bloqueio sobreposto
+    const overlaps = await EstablishmentBlockModel.findOne({
+      where: {
+        estabelecimento_id: req.body.estabelecimento_id,
+        data_inicio: req.body.data_inicio,
+        data_fim: req.body.data_fim,
+      },
+    });
+    if (overlaps) {
+      return res.status(409).json({ error: "Já existe bloqueio para este período" });
+    }
     const block = await EstablishmentBlockModel.create(req.body);
     res.status(201).json(block);
   } catch (error) {

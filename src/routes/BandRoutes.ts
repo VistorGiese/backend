@@ -5,6 +5,7 @@ import {
   getBandById,
   updateBand,
   deleteBand,
+  addBandManager,
 } from "../controllers/BandController";
 
 const router = Router();
@@ -14,5 +15,6 @@ router.get("/", getBands);
 router.get("/:id", getBandById);
 router.put("/:id", updateBand);
 router.delete("/:id", deleteBand);
+router.post("/add-manager", addBandManager);
 
 export default router;

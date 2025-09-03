@@ -19,8 +19,6 @@ import InstrumentRoutes from "./routes/InstrumentRoutes";
 import PaymentRoutes from "./routes/PaymentRoutes";
 import RatingRoutes from "./routes/RatingRoutes";
 
-import UserModel from "./models/UserModel";
-
 dotenv.config();
 
 const app = express();
@@ -45,7 +43,7 @@ app.use("/generos", GenreRoutes);
 app.use("/instrumentos", InstrumentRoutes);
 app.use("/pagamentos", PaymentRoutes);
 app.use("/avaliacoes", RatingRoutes);
-app.use(UserRoutes);
+app.use("/usuarios", UserRoutes);
 
 // Simulating database connection
 import sequelize from "./config/database"; 

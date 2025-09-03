@@ -237,6 +237,24 @@
           "path": ["instrumentos"]
         }
       }
+    },
+    {
+  "name": "Criar Usuário",
+  "request": {
+    "method": "POST",
+    "header": [{ "key": "Content-Type", "value": "application/json" }],
+    "body": {
+      "mode": "raw",
+      "raw": "{\n  \"nome\": \"Vitor\",\n  \"email\": \"vitor@example.com\",\n  \"senha\": \"123456\",\n  \"tipo\": \"banda\"\n}"
+    },
+    "url": {
+      "raw": "http://localhost:3000/usuarios",
+      "protocol": "http",
+      "host": ["localhost"],
+      "port": "3000",
+      "path": ["usuarios"]
+    }
+  }
     }
   ]
 }

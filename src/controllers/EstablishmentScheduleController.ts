@@ -3,6 +3,16 @@ import EstablishmentScheduleModel from "../models/EstablishmentScheduleModel";
 
 export const createSchedule = async (req: Request, res: Response) => {
   try {
+    // Verifica se já existe horário para o mesmo estabelecimento e dia
+    const exists = await EstablishmentScheduleModel.findOne({
+      where: {
+        estabelecimento_id: req.body.estabelecimento_id,
+        dia_semana: req.body.dia_semana,
+      },
+    });
+    if (exists) {
+      return res.status(409).json({ error: "Já existe horário para este dia neste estabelecimento" });
+    }
     const schedule = await EstablishmentScheduleModel.create(req.body);
     res.status(201).json(schedule);
   } catch (error) {
