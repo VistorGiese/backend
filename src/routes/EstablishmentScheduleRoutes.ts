@@ -5,6 +5,7 @@ import {
   getScheduleById,
   updateSchedule,
   deleteSchedule,
+  getSchedulesByEstablishment,
 } from "../controllers/EstablishmentScheduleController";
 
 const router = Router();
@@ -14,5 +15,6 @@ router.get("/", getSchedules);
 router.get("/:id", getScheduleById);
 router.put("/:id", updateSchedule);
 router.delete("/:id", deleteSchedule);
+router.get("/estabelecimento/:id", getSchedulesByEstablishment);
 
 export default router;

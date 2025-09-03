@@ -65,3 +65,16 @@ export const deleteSchedule = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Erro ao remover horário", details: error });
   }
 };
+
+export const getSchedulesByEstablishment = async (req: Request, res: Response) => {
+  try {
+    const estabelecimento_id = parseInt(req.params.id);
+    const schedules = await EstablishmentScheduleModel.findAll({
+      where: { estabelecimento_id },
+      order: [['dia_semana', 'ASC']]
+    });
+    res.json(schedules);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao buscar horários do estabelecimento", details: error });
+  }
+};
