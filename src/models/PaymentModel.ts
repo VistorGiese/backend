@@ -1,4 +1,3 @@
-// src/models/PaymentModel.ts
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 import { PaymentMethod } from './BookingModel';

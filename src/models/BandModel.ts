@@ -1,4 +1,3 @@
-// src/models/BandModel.ts
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
@@ -61,7 +60,7 @@ BandModel.init(
     },
     tempo_apresentacao_padrao: {
       type: DataTypes.INTEGER,
-      defaultValue: 120, // em minutos
+      defaultValue: 120, //  minutos
       validate: {
         min: 30,
         max: 480,

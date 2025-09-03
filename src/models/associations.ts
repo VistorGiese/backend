@@ -1,4 +1,3 @@
-// src/models/associations.ts
 import UserModel from './UserModel';
 import AddressModel from './AddressModel';
 import GenreModel from './GenreModel';
@@ -30,9 +29,9 @@ import {
 } from './ComplementaryModels';
 
 export function setupAssociations() {
-  // ===== RELACIONAMENTOS PRINCIPAIS =====
+  //  RELACIONAMENTOS PRINCIPAIS 
   
-  // User -> Band (1:1)
+
   UserModel.hasOne(BandModel, {
     foreignKey: 'usuario_id',
     as: 'banda',
@@ -42,7 +41,6 @@ export function setupAssociations() {
     as: 'usuario',
   });
 
-  // User -> Establishment (1:1)
   UserModel.hasOne(EstablishmentModel, {
     foreignKey: 'usuario_id',
     as: 'estabelecimento',
@@ -72,7 +70,6 @@ export function setupAssociations() {
     as: 'estabelecimentos',
   });
 
-  // CommonUser -> Address (N:1)
   CommonUserModel.belongsTo(AddressModel, {
     foreignKey: 'endereco_id',
     as: 'endereco',
@@ -82,9 +79,8 @@ export function setupAssociations() {
     as: 'usuariosComuns',
   });
 
-  // ===== RELACIONAMENTOS DE AGENDAMENTO =====
+  //  RELACIONAMENTOS DE AGENDAMENTO 
   
-  // Booking -> Band (N:1)
   BookingModel.belongsTo(BandModel, {
     foreignKey: 'banda_id',
     as: 'banda',
@@ -104,7 +100,6 @@ export function setupAssociations() {
     as: 'agendamentos',
   });
 
-  // Booking -> User (solicitante) (N:1)
   BookingModel.belongsTo(UserModel, {
     foreignKey: 'usuario_solicitante_id',
     as: 'solicitante',
@@ -114,9 +109,8 @@ export function setupAssociations() {
     as: 'solicitacoes',
   });
 
-  // ===== RELACIONAMENTOS DE CONTRATO E PAGAMENTO =====
+  //  RELACIONAMENTOS DE CONTRATO E PAGAMENTO 
   
-  // Contract -> Booking (1:1)
   BookingModel.hasOne(ContractModel, {
     foreignKey: 'agendamento_id',
     as: 'contrato',
@@ -126,7 +120,6 @@ export function setupAssociations() {
     as: 'agendamento',
   });
 
-  // Payment -> Contract (N:1)
   PaymentModel.belongsTo(ContractModel, {
     foreignKey: 'contrato_id',
     as: 'contrato',
@@ -136,9 +129,9 @@ export function setupAssociations() {
     as: 'pagamentos',
   });
 
-  // ===== RELACIONAMENTOS DE DISPONIBILIDADE =====
+  //  RELACIONAMENTOS DE DISPONIBILIDADE 
   
-  // BandAvailability -> Band (N:1)
+
   BandAvailabilityModel.belongsTo(BandModel, {
     foreignKey: 'banda_id',
     as: 'banda',
@@ -148,7 +141,6 @@ export function setupAssociations() {
     as: 'disponibilidades',
   });
 
-  // BandBlock -> Band (N:1)
   BandBlockModel.belongsTo(BandModel, {
     foreignKey: 'banda_id',
     as: 'banda',
@@ -158,7 +150,6 @@ export function setupAssociations() {
     as: 'bloqueios',
   });
 
-  // EstablishmentBlock -> Establishment (N:1)
   EstablishmentBlockModel.belongsTo(EstablishmentModel, {
     foreignKey: 'estabelecimento_id',
     as: 'estabelecimento',
@@ -168,7 +159,6 @@ export function setupAssociations() {
     as: 'bloqueios',
   });
 
-  // EstablishmentSchedule -> Establishment (N:1)
   EstablishmentScheduleModel.belongsTo(EstablishmentModel, {
     foreignKey: 'estabelecimento_id',
     as: 'estabelecimento',
@@ -178,9 +168,8 @@ export function setupAssociations() {
     as: 'horarios',
   });
 
-  // ===== RELACIONAMENTOS MUITOS-PARA-MUITOS =====
+  //  RELACIONAMENTOS MUITOS-PARA-MUITOS 
   
-  // Band <-> Genre (N:N)
   BandModel.belongsToMany(GenreModel, {
     through: BandGenreModel,
     foreignKey: 'banda_id',
@@ -194,7 +183,6 @@ export function setupAssociations() {
     as: 'bandas',
   });
 
-  // Establishment <-> Genre (N:N)
   EstablishmentModel.belongsToMany(GenreModel, {
     through: EstablishmentGenreModel,
     foreignKey: 'estabelecimento_id',
@@ -208,7 +196,6 @@ export function setupAssociations() {
     as: 'estabelecimentos',
   });
 
-  // Band <-> Instrument (N:N)
   BandModel.belongsToMany(InstrumentModel, {
     through: BandInstrumentModel,
     foreignKey: 'banda_id',
@@ -222,7 +209,6 @@ export function setupAssociations() {
     as: 'bandas',
   });
 
-  // Establishment <-> Instrument (N:N)
   EstablishmentModel.belongsToMany(InstrumentModel, {
     through: EstablishmentInstrumentModel,
     foreignKey: 'estabelecimento_id',
@@ -236,9 +222,8 @@ export function setupAssociations() {
     as: 'estabelecimentos',
   });
 
-  // ===== RELACIONAMENTOS DE MEMBROS =====
+  //  RELACIONAMENTOS DE MEMBROS 
   
-  // BandMember -> Band (N:1)
   BandMemberModel.belongsTo(BandModel, {
     foreignKey: 'banda_id',
     as: 'banda',
@@ -248,9 +233,8 @@ export function setupAssociations() {
     as: 'integrantes',
   });
 
-  // ===== RELACIONAMENTOS DE AVALIAÇÃO E COMENTÁRIOS =====
+  //  RELACIONAMENTOS DE AVALIAÇÃO E COMENTÁRIOS 
   
-  // Rating -> User (N:1)
   RatingModel.belongsTo(UserModel, {
     foreignKey: 'usuario_id',
     as: 'usuario',
@@ -260,7 +244,7 @@ export function setupAssociations() {
     as: 'avaliacoes',
   });
 
-  // Rating -> Booking (N:1)
+
   RatingModel.belongsTo(BookingModel, {
     foreignKey: 'agendamento_id',
     as: 'agendamento',
@@ -270,7 +254,6 @@ export function setupAssociations() {
     as: 'avaliacoes',
   });
 
-  // Comment -> User (N:1)
   CommentModel.belongsTo(UserModel, {
     foreignKey: 'usuario_id',
     as: 'usuario',
@@ -280,7 +263,6 @@ export function setupAssociations() {
     as: 'comentarios',
   });
 
-  // Comment -> Booking (N:1)
   CommentModel.belongsTo(BookingModel, {
     foreignKey: 'agendamento_id',
     as: 'agendamento',
@@ -290,9 +272,9 @@ export function setupAssociations() {
     as: 'comentarios',
   });
 
-  // ===== RELACIONAMENTOS DE FAVORITOS =====
+  //  RELACIONAMENTOS DE FAVORITOS 
   
-  // Favorite -> User (N:1)
+
   FavoriteModel.belongsTo(UserModel, {
     foreignKey: 'usuario_id',
     as: 'usuario',
@@ -302,9 +284,8 @@ export function setupAssociations() {
     as: 'favoritos',
   });
 
-  // ===== RELACIONAMENTOS COMPLEMENTARES =====
-  
-  // CompletedShow -> Booking (1:1)
+  //  RELACIONAMENTOS COMPLEMENTARES 
+
   BookingModel.hasOne(CompletedShowModel, {
     foreignKey: 'agendamento_id',
     as: 'showRealizado',
@@ -314,7 +295,7 @@ export function setupAssociations() {
     as: 'agendamento',
   });
 
-  // Ticket -> Booking (N:1)
+
   TicketModel.belongsTo(BookingModel, {
     foreignKey: 'agendamento_id',
     as: 'agendamento',
@@ -324,7 +305,6 @@ export function setupAssociations() {
     as: 'ingressos',
   });
 
-  // Ticket -> User (N:1)
   TicketModel.belongsTo(UserModel, {
     foreignKey: 'usuario_id',
     as: 'usuario',
@@ -334,7 +314,6 @@ export function setupAssociations() {
     as: 'ingressos',
   });
 
-  // BookingHistory -> Booking (N:1)
   BookingHistoryModel.belongsTo(BookingModel, {
     foreignKey: 'agendamento_id',
     as: 'agendamento',
@@ -344,7 +323,6 @@ export function setupAssociations() {
     as: 'historico',
   });
 
-  // BookingHistory -> User (N:1)
   BookingHistoryModel.belongsTo(UserModel, {
     foreignKey: 'usuario_id',
     as: 'usuario',
@@ -354,7 +332,6 @@ export function setupAssociations() {
     as: 'alteracoesAgendamentos',
   });
 
-  // CounterProposal -> Booking (N:1)
   CounterProposalModel.belongsTo(BookingModel, {
     foreignKey: 'agendamento_id',
     as: 'agendamento',
@@ -364,7 +341,6 @@ export function setupAssociations() {
     as: 'contrapropostas',
   });
 
-  // CounterProposal -> User (N:1)
   CounterProposalModel.belongsTo(UserModel, {
     foreignKey: 'usuario_id',
     as: 'usuario',

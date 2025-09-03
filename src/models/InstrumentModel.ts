@@ -1,4 +1,3 @@
-// src/models/InstrumentModel.ts
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 

@@ -1,4 +1,3 @@
-// src/models/EstablishmentScheduleModel.ts
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 

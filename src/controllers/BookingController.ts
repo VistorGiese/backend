@@ -123,7 +123,15 @@ export const updateBooking = async (req: Request, res: Response) => {
           .status(400)
           .json({ error: "Já existe agendamento ACEITO para este horário." });
       }
+      // Atualiza status e valor_final
+      await booking.update({
+        ...req.body,
+        status: BookingStatus.ACEITO,
+        valor_final: req.body.valor_final,
+      });
+      return res.json(booking);
     }
+    // Atualização normal
     await booking.update(req.body);
     res.json(booking);
   } catch (error) {

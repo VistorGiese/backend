@@ -1,4 +1,3 @@
-// src/models/FavoriteModel.ts
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 import { RatingTargetType } from './RatingModel';

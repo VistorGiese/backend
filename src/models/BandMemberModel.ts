@@ -1,4 +1,3 @@
-// src/models/BandMemberModel.ts
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
@@ -6,6 +5,7 @@ import sequelize from '../config/database';
 class BandMemberModel extends Model {
   id!: number;
   banda_id!: number;
+  usuario_id!: number;
   nome!: string;
   funcao?: string;
   ativo!: boolean;
@@ -25,6 +25,15 @@ BandMemberModel.init(
       allowNull: false,
       references: {
         model: 'bandas',
+        key: 'id',
+      },
+      onDelete: 'CASCADE',
+    },
+    usuario_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'usuarios',
         key: 'id',
       },
       onDelete: 'CASCADE',

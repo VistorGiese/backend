@@ -18,7 +18,7 @@ const sequelize = new Sequelize(
       acquire: 30000,
       idle: 10000
     },
-    timezone: '-03:00', // Ajuste para o fuso horário do Brasil
+    timezone: '00:00', 
   }
 );
 
