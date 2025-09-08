@@ -2,26 +2,29 @@ import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
 class UserEstablishmentModel extends Model {
-  userId!: number;
-  establishmentId!: number;
+  usuario_id!: number;
+  estabelecimento_id!: number;
 }
 
 UserEstablishmentModel.init({
-  userId: {
+  usuario_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: { model: 'usuarios', key: 'id' },
     onDelete: 'CASCADE',
+    primaryKey: true,
   },
-  establishmentId: {
+  estabelecimento_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: { model: 'establishments', key: 'id' },
+    references: { model: 'estabelecimentos', key: 'id' },
     onDelete: 'CASCADE',
+    primaryKey: true,
   },
 }, {
   sequelize,
   modelName: 'user_establishment',
+  tableName: 'estabelecimentos_usuarios',
   timestamps: false,
 });
 

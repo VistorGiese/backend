@@ -84,12 +84,12 @@ export const deleteEstablishment = async (req: Request, res: Response) => {
 };
 
 export const addEstablishmentManager = async (req: Request, res: Response) => {
-  const { userId, establishmentId } = req.body;
+  const { usuario_id, estabelecimento_id } = req.body;
   try {
     // Verifica se já existe vínculo
-    const exists = await UserEstablishmentModel.findOne({ where: { userId, establishmentId } });
+    const exists = await UserEstablishmentModel.findOne({ where: { usuario_id, estabelecimento_id } });
     if (exists) return res.status(400).json({ error: 'Usuário já é gestor deste estabelecimento' });
-    await UserEstablishmentModel.create({ userId, establishmentId });
+    await UserEstablishmentModel.create({ usuario_id, estabelecimento_id });
     return res.status(201).json({ message: 'Usuário adicionado como gestor do estabelecimento' });
   } catch (error: any) {
     return res.status(500).json({ error: 'Erro ao adicionar gestor', details: error.message });

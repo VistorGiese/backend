@@ -50,7 +50,6 @@ export function setupAssociations() {
     as: 'usuario',
   });
 
-  // User -> CommonUser (1:1)
   UserModel.hasOne(CommonUserModel, {
     foreignKey: 'usuario_id',
     as: 'usuarioComum',
@@ -60,7 +59,6 @@ export function setupAssociations() {
     as: 'usuario',
   });
 
-  // Establishment -> Address (N:1)
   EstablishmentModel.belongsTo(AddressModel, {
     foreignKey: 'endereco_id',
     as: 'endereco',
@@ -87,10 +85,9 @@ export function setupAssociations() {
   });
   BandModel.hasMany(BookingModel, {
     foreignKey: 'banda_id',
-    as: 'agendamentos',
+    as: 'agendamentos'
   });
 
-  // Booking -> Establishment (N:1)
   BookingModel.belongsTo(EstablishmentModel, {
     foreignKey: 'estabelecimento_id',
     as: 'estabelecimento',

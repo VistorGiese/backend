@@ -69,7 +69,19 @@ export const createBooking = async (req: Request, res: Response) => {
       ...req.body,
       status: BookingStatus.PENDENTE,
     });
-    res.status(201).json(booking);
+    // Buscar nomes relacionados
+    const BandModel = require('../models/BandModel').default;
+    const EstablishmentModel = require('../models/EstablishmentModel').default;
+    const UserModel = require('../models/UserModel').default;
+    const banda = await BandModel.findByPk(booking.banda_id);
+    const estabelecimento = await EstablishmentModel.findByPk(booking.estabelecimento_id);
+    const usuario = await UserModel.findByPk(booking.usuario_solicitante_id);
+    res.status(201).json({
+      ...booking.toJSON(),
+      banda_nome: banda ? banda.nome : null,
+      estabelecimento_nome: estabelecimento ? estabelecimento.nome_dono : null,
+      usuario_solicitante_nome: usuario ? usuario.nome : null,
+    });
   } catch (error) {
     res
       .status(400)
@@ -80,7 +92,22 @@ export const createBooking = async (req: Request, res: Response) => {
 export const getBookings = async (_req: Request, res: Response) => {
   try {
     const bookings = await BookingModel.findAll();
-    res.json(bookings);
+    // Buscar nomes relacionados
+    const BandModel = require('../models/BandModel').default;
+    const EstablishmentModel = require('../models/EstablishmentModel').default;
+    const UserModel = require('../models/UserModel').default;
+    const bookingsWithNames = await Promise.all(bookings.map(async (booking: any) => {
+      const banda = await BandModel.findByPk(booking.banda_id);
+      const estabelecimento = await EstablishmentModel.findByPk(booking.estabelecimento_id);
+      const usuario = await UserModel.findByPk(booking.usuario_solicitante_id);
+      return {
+        ...booking.toJSON(),
+        banda_nome: banda ? banda.nome : null,
+        estabelecimento_nome: estabelecimento ? estabelecimento.nome_dono : null,
+        usuario_solicitante_nome: usuario ? usuario.nome : null,
+      };
+    }));
+    res.json(bookingsWithNames);
   } catch (error) {
     res
       .status(500)
@@ -93,7 +120,19 @@ export const getBookingById = async (req: Request, res: Response) => {
     const booking = await BookingModel.findByPk(req.params.id);
     if (!booking)
       return res.status(404).json({ error: "Agendamento não encontrado" });
-    res.json(booking);
+    // Buscar nomes relacionados
+    const BandModel = require('../models/BandModel').default;
+    const EstablishmentModel = require('../models/EstablishmentModel').default;
+    const UserModel = require('../models/UserModel').default;
+    const banda = await BandModel.findByPk(booking.banda_id);
+    const estabelecimento = await EstablishmentModel.findByPk(booking.estabelecimento_id);
+    const usuario = await UserModel.findByPk(booking.usuario_solicitante_id);
+    res.json({
+      ...booking.toJSON(),
+      banda_nome: banda ? banda.nome : null,
+      estabelecimento_nome: estabelecimento ? estabelecimento.nome_dono : null,
+      usuario_solicitante_nome: usuario ? usuario.nome : null,
+    });
   } catch (error) {
     res
       .status(500)
