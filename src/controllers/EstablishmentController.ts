@@ -5,13 +5,11 @@ import UserEstablishmentModel from '../models/UserEstablishmentModel';
 export const createEstablishment = async (req: Request, res: Response) => {
   try {
     const { usuario_id, nome_dono, ...rest } = req.body;
-    // Valida se o usuário existe
     const UserModel = require('../models/UserModel').default;
     const usuario = await UserModel.findByPk(usuario_id);
     if (!usuario) {
       return res.status(400).json({ error: "Usuário não existe. Crie o usuário antes de criar o estabelecimento." });
     }
-    // Usa o nome do usuário como nome do dono do estabelecimento
     const establishment = await EstablishmentModel.create({
       usuario_id,
       nome_dono: usuario.nome,

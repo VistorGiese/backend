@@ -1,117 +1,88 @@
+import { Op } from "sequelize";
+export const getAvailableEventsForBands = async (_req: Request, res: Response) => {
+  try {
+    const eventos = await BookingModel.findAll({
+      where: {
+        banda_id: { [Op.is]: null },
+        status: BookingStatus.PENDENTE
+      }
+    });
+    res.json(eventos);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao buscar eventos disponíveis", details: error });
+  }
+};
+export const applyBandToEvent = async (req: Request, res: Response) => {
+  try {
+    const { banda_id } = req.body;
+    const { id } = req.params;
+    const evento = await BookingModel.findByPk(id);
+    if (!evento) {
+      return res.status(404).json({ error: "Evento não encontrado" });
+    }
+    if (evento.banda_id) {
+      return res.status(400).json({ error: "Evento já possui banda associada" });
+    }
+    await evento.update({ banda_id, status: BookingStatus.EM_NEGOCIACAO });
+    res.json({ message: "Banda aplicada ao evento com sucesso", evento });
+  } catch (error) {
+    res.status(400).json({ error: "Erro ao aplicar banda ao evento", details: error });
+  }
+};
 import { Request, Response } from "express";
 import BookingModel, { BookingStatus } from "../models/BookingModel";
 import EstablishmentScheduleModel from "../models/EstablishmentScheduleModel";
 
 export const createBooking = async (req: Request, res: Response) => {
   try {
-    const { estabelecimento_id, data_show, duracao_estimada } = req.body;
-    const dataShow = new Date(data_show);
-    const diaSemana = [
-      "domingo",
-      "segunda",
-      "terca",
-      "quarta",
-      "quinta",
-      "sexta",
-      "sabado",
-    ][dataShow.getDay()];
-
-    // 1. Verifica se existe horário disponível no estabelecimento
-    const horario = await EstablishmentScheduleModel.findOne({
-      where: {
-        estabelecimento_id,
-        dia_semana: diaSemana,
-        aceita_shows: true,
-      },
-    });
-    if (!horario) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Estabelecimento não possui horário disponível para agendamento nesse dia.",
-        });
-    }
-
-    // 2. Verifica se o horário solicitado está dentro do intervalo permitido
-    const horaInicio = dataShow.toTimeString().slice(0, 5);
-    const horaFim = new Date(dataShow.getTime() + duracao_estimada * 60000)
-      .toTimeString()
-      .slice(0, 5);
-    if (
-      horaInicio < horario.horario_abertura ||
-      horaFim > horario.horario_fechamento
-    ) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Horário solicitado está fora do horário de funcionamento do estabelecimento.",
-        });
-    }
-
-    // 3. Verifica se já existe agendamento ACEITO para o mesmo horário
+    const { titulo_evento, descricao_evento, data_show, estabelecimento_id, horario_inicio, horario_fim } = req.body;
+    const { Op } = require('sequelize');
     const conflito = await BookingModel.findOne({
       where: {
         estabelecimento_id,
         data_show,
-        status: BookingStatus.ACEITO,
-      },
+        [Op.or]: [
+          {
+            horario_inicio: { [Op.lt]: horario_fim },
+            horario_fim: { [Op.gt]: horario_inicio }
+          }
+        ]
+      }
     });
     if (conflito) {
-      return res
-        .status(400)
-        .json({ error: "Já existe agendamento ACEITO para este horário." });
+      return res.status(400).json({ error: "Já existe evento para este estabelecimento neste horário e dia." });
     }
-
-    // 4. Cria agendamento como proposta (PENDENTE)
     const booking = await BookingModel.create({
-      ...req.body,
+      titulo_evento,
+      descricao_evento,
+      data_show,
+      estabelecimento_id,
+      horario_inicio,
+      horario_fim,
       status: BookingStatus.PENDENTE,
     });
-    // Buscar nomes relacionados
-    const BandModel = require('../models/BandModel').default;
-    const EstablishmentModel = require('../models/EstablishmentModel').default;
-    const UserModel = require('../models/UserModel').default;
-    const banda = await BandModel.findByPk(booking.banda_id);
-    const estabelecimento = await EstablishmentModel.findByPk(booking.estabelecimento_id);
-    const usuario = await UserModel.findByPk(booking.usuario_solicitante_id);
-    res.status(201).json({
-      ...booking.toJSON(),
-      banda_nome: banda ? banda.nome : null,
-      estabelecimento_nome: estabelecimento ? estabelecimento.nome_dono : null,
-      usuario_solicitante_nome: usuario ? usuario.nome : null,
-    });
+    res.status(201).json(booking);
   } catch (error) {
-    res
-      .status(400)
-      .json({ error: "Erro ao criar agendamento", details: error });
+    res.status(400).json({ error: "Erro ao criar evento", details: error });
   }
 };
 
 export const getBookings = async (_req: Request, res: Response) => {
   try {
-    const bookings = await BookingModel.findAll();
-    // Buscar nomes relacionados
-    const BandModel = require('../models/BandModel').default;
-    const EstablishmentModel = require('../models/EstablishmentModel').default;
-    const UserModel = require('../models/UserModel').default;
-    const bookingsWithNames = await Promise.all(bookings.map(async (booking: any) => {
-      const banda = await BandModel.findByPk(booking.banda_id);
-      const estabelecimento = await EstablishmentModel.findByPk(booking.estabelecimento_id);
-      const usuario = await UserModel.findByPk(booking.usuario_solicitante_id);
-      return {
-        ...booking.toJSON(),
-        banda_nome: banda ? banda.nome : null,
-        estabelecimento_nome: estabelecimento ? estabelecimento.nome_dono : null,
-        usuario_solicitante_nome: usuario ? usuario.nome : null,
-      };
-    }));
-    res.json(bookingsWithNames);
+    const bookings = await BookingModel.findAll({
+      attributes: [
+        "id",
+        "titulo_evento",
+        "descricao_evento",
+        "data_show",
+        "horario_inicio",
+        "horario_fim",
+        "estabelecimento_id"
+      ]
+    });
+    res.json(bookings);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Erro ao buscar agendamentos", details: error });
+    res.status(500).json({ error: "Erro ao buscar agendamentos", details: error });
   }
 };
 
@@ -120,7 +91,6 @@ export const getBookingById = async (req: Request, res: Response) => {
     const booking = await BookingModel.findByPk(req.params.id);
     if (!booking)
       return res.status(404).json({ error: "Agendamento não encontrado" });
-    // Buscar nomes relacionados
     const BandModel = require('../models/BandModel').default;
     const EstablishmentModel = require('../models/EstablishmentModel').default;
     const UserModel = require('../models/UserModel').default;
@@ -145,10 +115,7 @@ export const updateBooking = async (req: Request, res: Response) => {
     const booking = await BookingModel.findByPk(req.params.id);
     if (!booking)
       return res.status(404).json({ error: "Agendamento não encontrado" });
-
-    // Se o status está sendo alterado para ACEITO, bloquear horário para outros agendamentos
     if (req.body.status === BookingStatus.ACEITO) {
-      // Verifica se já existe outro ACEITO para o mesmo horário
       const conflito = await BookingModel.findOne({
         where: {
           estabelecimento_id: booking.estabelecimento_id,
@@ -162,7 +129,6 @@ export const updateBooking = async (req: Request, res: Response) => {
           .status(400)
           .json({ error: "Já existe agendamento ACEITO para este horário." });
       }
-      // Atualiza status e valor_final
       await booking.update({
         ...req.body,
         status: BookingStatus.ACEITO,
@@ -170,7 +136,6 @@ export const updateBooking = async (req: Request, res: Response) => {
       });
       return res.json(booking);
     }
-    // Atualização normal
     await booking.update(req.body);
     res.json(booking);
   } catch (error) {

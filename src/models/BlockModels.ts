@@ -64,7 +64,6 @@ BandBlockModel.init(
   }
 );
 
-// Bloqueios de Estabelecimentos
 class EstablishmentBlockModel extends Model {
   id!: number;
   estabelecimento_id!: number;

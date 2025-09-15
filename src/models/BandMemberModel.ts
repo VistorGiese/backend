@@ -45,7 +45,6 @@ BandMemberModel.init(
     funcao: {
       type: DataTypes.STRING(100),
       allowNull: true,
-      comment: 'vocalista, guitarrista, baterista, baixista, tecladista, etc.',
     },
     ativo: {
       type: DataTypes.BOOLEAN,

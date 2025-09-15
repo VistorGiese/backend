@@ -53,16 +53,23 @@ class BookingModel extends Model {
   ultima_sincronizacao?: Date;
 }
 
-BookingModel.init(
-  {
+BookingModel.init({
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
+    horario_inicio: {
+      type: DataTypes.TIME,
+      allowNull: false,
+    },
+    horario_fim: {
+      type: DataTypes.TIME,
+      allowNull: false,
+    },
     banda_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'bandas',
         key: 'id',
@@ -78,7 +85,7 @@ BookingModel.init(
     },
     usuario_solicitante_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'usuarios',
         key: 'id',
@@ -86,7 +93,7 @@ BookingModel.init(
     },
     tipo_solicitacao: {
       type: DataTypes.ENUM(...Object.values(BookingRequestType)),
-      allowNull: false,
+      allowNull: true,
     },
     data_show: {
       type: DataTypes.DATE,
@@ -97,7 +104,7 @@ BookingModel.init(
     },
     duracao_estimada: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       validate: {
         min: 30,
         max: 480,

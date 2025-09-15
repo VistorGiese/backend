@@ -1,8 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
-
-// Shows Realizados
 class CompletedShowModel extends Model {
   id!: number;
   agendamento_id!: number;
@@ -59,7 +57,6 @@ CompletedShowModel.init(
   }
 );
 
-// Ingressos
 export enum TicketType {
   INTEIRA = 'inteira',
   MEIA = 'meia',
@@ -139,7 +136,6 @@ TicketModel.init(
   }
 );
 
-// Histórico de Agendamentos
 class BookingHistoryModel extends Model {
   id!: number;
   agendamento_id!: number;
@@ -204,7 +200,6 @@ BookingHistoryModel.init(
   }
 );
 
-// Contrapropostas
 export enum CounterProposalStatus {
   PENDENTE = 'pendente',
   ACEITA = 'aceita',

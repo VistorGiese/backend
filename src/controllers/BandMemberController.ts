@@ -14,13 +14,11 @@ import BandMemberModel from "../models/BandMemberModel";
 export const createMember = async (req: Request, res: Response) => {
   try {
     const { usuario_id, banda_id, funcao, ativo, data_entrada } = req.body;
-    // Valida se o usuário existe
     const UserModel = require('../models/UserModel').default;
     const usuario = await UserModel.findByPk(usuario_id);
     if (!usuario) {
       return res.status(400).json({ error: "Usuário não existe. Crie o usuário antes de adicionar como membro de banda." });
     }
-    // Usa o nome do usuário como nome do membro
     const member = await BandMemberModel.create({
       usuario_id,
       banda_id,

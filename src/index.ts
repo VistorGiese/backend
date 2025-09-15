@@ -18,6 +18,7 @@ import GenreRoutes from "./routes/GenreRoutes";
 import InstrumentRoutes from "./routes/InstrumentRoutes";
 import PaymentRoutes from "./routes/PaymentRoutes";
 import RatingRoutes from "./routes/RatingRoutes";
+import BandApplicationRoutes from "./routes/BandApplicationRoutes";
 
 dotenv.config();
 
@@ -44,8 +45,8 @@ app.use("/instrumentos", InstrumentRoutes);
 app.use("/pagamentos", PaymentRoutes);
 app.use("/avaliacoes", RatingRoutes);
 app.use("/usuarios", UserRoutes);
+app.use("/aplicacoes_banda_evento", BandApplicationRoutes);
 
-// Simulating database connection
 import sequelize from "./config/database"; 
 
 sequelize

@@ -3,7 +3,6 @@ import BandAvailabilityModel from "../models/BandAvailabilityModel";
 
 export const createAvailability = async (req: Request, res: Response) => {
   try {
-    // Verifica se já existe disponibilidade sobreposta
     const overlaps = await BandAvailabilityModel.findOne({
       where: {
         banda_id: req.body.banda_id,

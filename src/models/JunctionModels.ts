@@ -1,8 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
 
-
-// Gêneros das Bandas
 class BandGenreModel extends Model {
   id!: number;
   banda_id!: number;
