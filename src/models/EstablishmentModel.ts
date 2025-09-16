@@ -4,8 +4,12 @@ import sequelize from '../config/database';
 
 class EstablishmentModel extends Model {
   id!: number;
-  usuario_id!: number;
+  usuario_id?: number;
+  nome_estabelecimento!: string;
   nome_dono!: string;
+  email_responsavel!: string;
+  celular_responsavel!: string;
+  generos_musicais!: string;
   cnpj?: string;
   endereco_id!: number;
   descricao?: string;
@@ -29,15 +33,34 @@ EstablishmentModel.init(
     },
     usuario_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'usuarios',
         key: 'id',
       },
       onDelete: 'CASCADE',
     },
+    nome_estabelecimento: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
     nome_dono: {
       type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    email_responsavel: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+      validate: {
+        isEmail: true,
+      },
+    },
+    celular_responsavel: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+    },
+    generos_musicais: {
+      type: DataTypes.STRING(255), // pode ser uma string separada por vírgulas
       allowNull: false,
     },
     cnpj: {

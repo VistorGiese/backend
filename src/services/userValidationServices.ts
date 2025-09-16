@@ -45,6 +45,17 @@ export const validateCPF = (CPF: string): string | null => {
   return null;
 };
 
+// Validador de formato de celular brasileiro (aceita 10 ou 11 dígitos, com ou sem DDD)
+export const validatePhoneFormat = (phone: string): string | null => {
+  if (!phone || typeof phone !== "string") return "Informe um celular válido";
+  // Remove tudo que não for número
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length < 10 || digits.length > 11) {
+    return "Celular inválido. Use DDD + número (10 a 11 dígitos)";
+  }
+  return null;
+};
+
 export const validatePasswordFormat = (password: string): string | null => {
   const senhaRegex =
     /^(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;

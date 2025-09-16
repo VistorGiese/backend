@@ -3,7 +3,21 @@ import Address from "../models/AddressModel";
 
 export const createAddress = async (req: Request, res: Response) => {
   try {
-    const address = await Address.create(req.body);
+    const { rua, numero, bairro, cidade, estado, cep } = req.body;
+    if (rua && numero) {
+      const existingAddressByRuaNumero = await Address.findOne({ where: { logradouro: rua, numero } });
+      if (existingAddressByRuaNumero) {
+        return res.status(400).json({ error: "Já existe um endereço cadastrado com esta rua e número." });
+      }
+    }
+    const address = await Address.create({
+      logradouro: rua,
+      numero,
+      bairro,
+      cidade,
+      estado,
+      cep
+    });
     res.status(201).json(address);
   } catch (error) {
     res.status(400).json({ error: "Erro ao criar endereço", details: error });

@@ -1,25 +1,83 @@
 import { Request, Response } from "express";
 import EstablishmentModel from "../models/EstablishmentModel";
 import UserEstablishmentModel from '../models/UserEstablishmentModel';
+import AddressModel from '../models/AddressModel';
+import { validateEmailFormat, validatePhoneFormat } from "../services/userValidationServices";
 
 export const createEstablishment = async (req: Request, res: Response) => {
   try {
-    const { usuario_id, nome_dono, ...rest } = req.body;
-    const UserModel = require('../models/UserModel').default;
-    const usuario = await UserModel.findByPk(usuario_id);
-    if (!usuario) {
-      return res.status(400).json({ error: "Usuário não existe. Crie o usuário antes de criar o estabelecimento." });
+    const {
+      nome_estabelecimento,
+      nome_dono,
+      email_responsavel,
+      celular_responsavel,
+      generos_musicais,
+      horario_funcionamento_inicio,
+      horario_funcionamento_fim,
+      endereco_id 
+    } = req.body;
+
+
+
+    if (!nome_estabelecimento || !nome_dono || !email_responsavel || !celular_responsavel || !generos_musicais || !horario_funcionamento_inicio || !horario_funcionamento_fim || !endereco_id) {
+      return res.status(400).json({ error: "Preencha todos os campos obrigatórios, incluindo o endereco_id." });
     }
+
+    // Validação de formato de email
+    const emailError = validateEmailFormat(email_responsavel);
+    if (emailError) {
+      return res.status(400).json({ error: emailError });
+    }
+
+    // Validação de formato de celular
+    const phoneError = validatePhoneFormat(celular_responsavel);
+    if (phoneError) {
+      return res.status(400).json({ error: phoneError });
+    }
+
+    const endereco = await AddressModel.findByPk(endereco_id);
+    if (!endereco) {
+      return res.status(400).json({ error: "Endereço não encontrado." });
+    }
+
+
+    const existingEstablishment = await EstablishmentModel.findOne({ where: { endereco_id } });
+    if (existingEstablishment) {
+      return res.status(400).json({ error: "Já existe um estabelecimento cadastrado com este endereço." });
+    }
+
+    const existingByCelular = await EstablishmentModel.findOne({ where: { celular_responsavel } });
+    if (existingByCelular) {
+      return res.status(400).json({ error: "Já existe um estabelecimento cadastrado com este celular." });
+    }
+
+    const existingByEmail = await EstablishmentModel.findOne({ where: { email_responsavel } });
+    if (existingByEmail) {
+      return res.status(400).json({ error: "Já existe um estabelecimento cadastrado com este e-mail." });
+    }
+
     const establishment = await EstablishmentModel.create({
-      usuario_id,
-      nome_dono: usuario.nome,
-      ...rest
+      nome_estabelecimento,
+      nome_dono,
+      email_responsavel,
+      celular_responsavel,
+      generos_musicais,
+      horario_funcionamento_inicio,
+      horario_funcionamento_fim,
+      endereco_id
     });
-    res.status(201).json(establishment);
+    res.status(201).json({
+      nome_estabelecimento,
+      nome_dono,
+      email_responsavel,
+      celular_responsavel,
+      generos_musicais,
+      horario_funcionamento_inicio,
+      horario_funcionamento_fim,
+      endereco_id
+    });
   } catch (error) {
-    res
-      .status(400)
-      .json({ error: "Erro ao criar estabelecimento", details: error });
+    res.status(400).json({ error: "Erro ao criar estabelecimento", details: error });
   }
 };
 
@@ -42,8 +100,6 @@ export const getEstablishmentById = async (req: Request, res: Response) => {
     if (establishment.aceita_agendamentos === false) {
       return res.status(403).json({ error: "Estabelecimento não aceita agendamentos" });
     }
-    // Busca o endereço completo
-    const AddressModel = require('../models/AddressModel').default;
     const endereco = await AddressModel.findByPk(establishment.endereco_id);
     res.json({ ...establishment.toJSON(), endereco });
   } catch (error) {
@@ -84,7 +140,6 @@ export const deleteEstablishment = async (req: Request, res: Response) => {
 export const addEstablishmentManager = async (req: Request, res: Response) => {
   const { usuario_id, estabelecimento_id } = req.body;
   try {
-    // Verifica se já existe vínculo
     const exists = await UserEstablishmentModel.findOne({ where: { usuario_id, estabelecimento_id } });
     if (exists) return res.status(400).json({ error: 'Usuário já é gestor deste estabelecimento' });
     await UserEstablishmentModel.create({ usuario_id, estabelecimento_id });
