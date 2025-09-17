@@ -83,12 +83,22 @@ export const createEstablishment = async (req: Request, res: Response) => {
 
 export const getEstablishments = async (_req: Request, res: Response) => {
   try {
-    const establishments = await EstablishmentModel.findAll();
+    const establishments = await EstablishmentModel.findAll({
+      attributes: [
+        "id",
+        "nome_estabelecimento",
+        "nome_dono",
+        "email_responsavel",
+        "celular_responsavel",
+        "generos_musicais",
+        "horario_funcionamento_inicio",
+        "horario_funcionamento_fim",
+        "endereco_id"
+      ]
+    });
     res.json(establishments);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Erro ao buscar estabelecimentos", details: error });
+    res.status(500).json({ error: "Erro ao buscar estabelecimentos", details: error });
   }
 };
 

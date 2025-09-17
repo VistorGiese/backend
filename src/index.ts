@@ -49,10 +49,13 @@ app.use("/aplicacoes_banda_evento", BandApplicationRoutes);
 
 import sequelize from "./config/database"; 
 
+
 sequelize
   .authenticate()
   .then(() => {
     console.log("Banco de dados conectado com sucesso!");
+    // Para criar as tabelas automaticamente 
+    // sequelize.sync();
   })
   .catch((error) => {
     console.error("Erro ao conectar ao banco de dados:", error);

@@ -5,6 +5,10 @@ import BookingModel from "../models/BookingModel";
 export const applyBandToEvent = async (req: Request, res: Response) => {
   try {
     const { banda_id, evento_id } = req.body;
+    const evento = await BookingModel.findByPk(evento_id);
+    if (!evento) {
+      return res.status(404).json({ error: "Evento não encontrado" });
+    }
     const existente = await BandApplicationModel.findOne({
       where: { banda_id, evento_id }
     });

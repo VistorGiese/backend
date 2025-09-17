@@ -72,12 +72,13 @@ export const getBookings = async (_req: Request, res: Response) => {
     const bookings = await BookingModel.findAll({
       attributes: [
         "id",
+        "estabelecimento_id",
         "titulo_evento",
         "descricao_evento",
         "data_show",
         "horario_inicio",
         "horario_fim",
-        "estabelecimento_id"
+        "status"
       ]
     });
     res.json(bookings);
